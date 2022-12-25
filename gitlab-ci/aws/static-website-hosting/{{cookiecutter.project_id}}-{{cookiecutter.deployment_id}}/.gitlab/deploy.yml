@@ -1,0 +1,21 @@
+deploy-javascript-to-s3-"{{cookiecutter.environment}}":
+  extends:
+    - .base-javascript-to-s3-deploy
+  resource_group: deploy-javascript-to-s3-"{{cookiecutter.environment}}"
+  dependencies:
+    - build-javascript-"{{cookiecutter.environment}}"
+  before_script: []
+  rules:
+    - if: '$CI_COMMIT_REF_SLUG == "{{cookiecutter.git_branch}}"'
+      changes:
+        - .gitlab-ci.yml
+        - .gitlab/**/*
+        - "{{cookiecutter.javascript_source_folder}}"/**/*
+      variables:
+        AWS_REGION: '"{{cookiecutter.aws_region}}"'
+        AWS_ACCESS_KEY_ID: '"{{cookiecutter.aws_access_key_id}}"'
+        AWS_SECRET_ACCESS_KEY: '"{{cookiecutter.aws_secret_access_key}}"'
+        JAVASCRIPT_SOURCE_FOLDER: '"{{cookiecutter.javascript_source_folder}}"'
+        JAVASCRIPT_BUILD_FOLDER: '"{{cookiecutter.javascript_build_folder}}"'
+        AWS_S3_STATIC_WEBSITE_BUCKET: '"{{cookiecutter.aws_s3_static_website_bucket}}"'
+        AWS_CLOUDFRONT_DISTRIBUTION_ID: '"{{cookiecutter.aws_cloudfront_distribution_id}}"'

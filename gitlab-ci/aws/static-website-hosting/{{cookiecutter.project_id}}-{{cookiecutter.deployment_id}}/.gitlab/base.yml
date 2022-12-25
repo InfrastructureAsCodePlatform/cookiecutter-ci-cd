@@ -1,0 +1,26 @@
+.base-javascript-build:
+  image: "$NODE_IMAGE"
+  stage: build
+  dependencies: []
+  before_script: []
+  script:
+    - cd "$JAVASCRIPT_SOURCE_FOLDER"
+    - "$JAVASCRIPT_PACKAGE_MANAGER" "$JAVASCRIPT_INSTALL_COMMAND"
+    - ENVIRONMENT="$ENVIRONMENT" "$JAVASCRIPT_PACKAGE_MANAGER" "$JAVASCRIPT_BUILD_COMMAND"
+  cache:
+    untracked: true
+    key: "$JAVASCRIPT_SOURCE_FOLDER-$CI_COMMIT_REF_SLUG-javascript"
+    paths:
+      - "$JAVASCRIPT_SOURCE_FOLDER/node_modules/"
+  artifacts:
+    paths:
+      - "$JAVASCRIPT_SOURCE_FOLDER/$JAVASCRIPT_BUILD_FOLDER/"
+
+.base-javascript-to-s3-deploy:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  before_script: []
+  script:
+    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws s3 sync ${JAVASCRIPT_SOURCE_FOLDER}/${JAVASCRIPT_BUILD_FOLDER}/ s3://${AWS_S3_STATIC_WEBSITE_BUCKET} --delete --region "${AWS_REGION}"
+    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws s3 cp ${JAVASCRIPT_SOURCE_FOLDER}/${JAVASCRIPT_BUILD_FOLDER}/index.html s3://${AWS_S3_STATIC_WEBSITE_BUCKET}/index.html --metadata-directive REPLACE --cache-control no-cache,no-store,must-revalidate,max-age=0 --content-type text/html --region "${AWS_REGION}"
+    - if [ "$AWS_CLOUDFRONT_DISTRIBUTION_ID" == "" ]; then echo "-"; else AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws cloudfront create-invalidation --distribution-id=${AWS_CLOUDFRONT_DISTRIBUTION_ID} --paths "/*" --region "${AWS_REGION}"; fi

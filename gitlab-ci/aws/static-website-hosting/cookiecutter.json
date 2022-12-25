@@ -1,0 +1,20 @@
+{
+  "project_id": "",
+  "deployment_id": "",
+  "environment": "",
+
+  "git_branch": "main",
+  "docker_image": "node:18.12-buster",
+
+  "aws_region": "",
+  "aws_access_key_id": "",
+  "aws_secret_access_key": "",
+  "aws_s3_static_website_bucket": "",
+  "aws_cloudfront_distribution_id": "",
+
+  "javascript_source_folder": "",
+  "javascript_package_manager": "npm",
+  "javascript_install_command": "install",
+  "javascript_build_command": "run build",
+  "javascript_build_folder": "dist"
+}

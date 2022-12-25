@@ -1,0 +1,16 @@
+build-javascript-"{{cookiecutter.environment}}":
+  extends:
+    - .base-javascript-build
+  rules:
+    - if: '$CI_COMMIT_REF_SLUG == "{{cookiecutter.git_branch}}"'
+      changes:
+        - .gitlab-ci.yml
+        - .gitlab/**/*
+        - "{{cookiecutter.javascript_source_folder}}"/**/*
+      variables:
+        NODE_IMAGE: '"{{cookiecutter.docker_image}}"'
+        JAVASCRIPT_SOURCE_FOLDER: '"{{cookiecutter.javascript_source_folder}}"'
+        JAVASCRIPT_PACKAGE_MANAGER: '"{{cookiecutter.javascript_package_manager}}"'
+        JAVASCRIPT_INSTALL_COMMAND: '{{cookiecutter.javascript_install_command}}'
+        JAVASCRIPT_BUILD_COMMAND: '"{{cookiecutter.javascript_build_command}}'
+        JAVASCRIPT_BUILD_FOLDER: '"{{cookiecutter.javascript_build_folder}}"'

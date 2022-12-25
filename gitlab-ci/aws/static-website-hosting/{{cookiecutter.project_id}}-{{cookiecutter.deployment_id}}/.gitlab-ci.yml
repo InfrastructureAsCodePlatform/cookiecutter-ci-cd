@@ -1,0 +1,14 @@
+image: docker:20
+
+services:
+  - docker:dind
+
+
+include:
+  - local: '.gitlab/base.yml'
+  - local: '.gitlab/build.yml'
+  - local: '.gitlab/deploy.yml'
+
+stages:
+  - build
+  - deploy
