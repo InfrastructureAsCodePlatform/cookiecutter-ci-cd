@@ -1,0 +1,42 @@
+name: Build and Deploy SPA application to AWS S3
+
+on:
+  push:
+    branches: {{cookiecutter.branches}}
+
+
+jobs:
+  build-and-deploy:
+    runs-on: {{cookiecutter.runs_on}}
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: {{cookiecutter.working_directory}}
+
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-access-key-id: ${{ '{{' }} {{cookiecutter.aws_access_key_id}} {{ '}}' }}
+        aws-secret-access-key: ${{ '{{' }} {{cookiecutter.aws_secret_access_key}} {{ '}}' }}
+        aws-region: ${{ '{{' }} {{cookiecutter.aws_region}} {{ '}}' }}
+
+    - uses: actions/checkout@v3
+
+    - name: Configure Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: {{cookiecutter.node_version}}
+
+    - name: Install dependencies
+      run: {{cookiecutter.package_manager}} {{cookiecutter.install_command}}
+
+    - name: Build
+      run: {{cookiecutter.package_manager}} {{cookiecutter.build_command}}
+
+    - name: Copy files to AWS S3 with the AWS CLI
+      run: |
+        aws s3 sync {{cookiecutter.build_folder}}/ "s3://${{ '{{' }} {{cookiecutter.aws_s3_static_website_bucket}} {{ '}}' }}" --delete
+        aws s3 cp {{cookiecutter.build_folder}}/index.html "s3://${{ '{{' }} {{cookiecutter.aws_s3_static_website_bucket}} {{ '}}' }}/index.html" --metadata-directive REPLACE --cache-control no-cache,no-store,must-revalidate,max-age=0 --content-type text/html

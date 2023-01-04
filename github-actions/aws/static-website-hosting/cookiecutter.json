@@ -1,0 +1,19 @@
+{
+  "project_id": "",
+  "deployment_id": "",
+  "environment": "",
+
+  "branches": ["main"],
+  "runs_on": "ubuntu-latest",
+  "working_directory": ".",
+  "node_version": "18.x",
+
+  "aws_access_key_id": "{{cookiecutter.environment.upper()}}_AWS_ACCESS_KEY_ID",
+  "aws_secret_access_key": "{{cookiecutter.environment.upper()}}_AWS_SECRET_ACCESS_KEY",
+  "aws_region": "{{cookiecutter.environment.upper()}}_AWS_REGION",
+  "aws_s3_static_website_bucket": "{{cookiecutter.environment.upper()}}_AWS_S3_STATIC_WEBSITE_BUCKET",
+  "package_manager": "npm",
+  "install_command": "install",
+  "build_command": "run build",
+  "build_folder": "dist"
+}
